@@ -1,13 +1,14 @@
-package main
+package character
 
 import (
 	"fmt"
 	"math/rand"
+	"encoding/json"
 )
 
 type DiceRoll struct {
-	Sides    int
-	NumRolls int
+	Sides    int 'json:"sides"'
+	NumRolls int 'json:"rolls"'
 }
 
 func (d *DiceRoll) Roll() int {
@@ -22,69 +23,69 @@ func (d *DiceRoll) Roll() int {
 }
 
 type Character struct {
-	Name           string
-	Race           Race
-	Class          Class
-	Portrait       string //Maybe an image name???
-	Description    Description
-	Exp            int
-	Stats          Stats
-	Inventory      []Item
-	EquipedClothes []Wearable
-	EquipedWeapon  []Weapon
-	Skills         []Skill
+	Name           string 'json:"name"'
+	Race           Race	'json:"race"'
+	Class          Class 'json:"class"'
+	Portrait       string 'json:"portrait"'//Maybe an image name???
+	Description    Description 'json:"desc"'
+	Exp            int 'json:"exp"'
+	Stats          Stats 'json:"stats"'
+	Inventory      []Item 'json:"inventory"'
+	EquipedClothes []Wearable 'json:"clothes"'
+	EquipedWeapon  []Weapon 'json:"weapons"'
+	Skills         []Skill 'json:"skills"'
 }
 
 type Race struct {
-	Name        string
-	Image       string
-	Description string //Possible front end use???
-	Bonuses     map[string]int
+	Name        string 'json:"name"'
+	Image       string 'json:"image"'
+	Description string 'json:"desc"'//Possible front end use???
+	Bonuses     map[string]int 'json:"bonuses"'
 }
 
 type Class struct {
-	Name          string
-	Subclass      string
-	Description   string //Possible front end use???
-	Proficiencies []string
+	Name          string 'json:"name"'
+	Subclass      string 'json:"subclass"'
+	Description   string 'json:"desc"'//Possible front end use???
+	Proficiencies []string 'json:"proficiencies"'
 }
 
 type Description struct {
-	Alignment  string
-	Ideals     string
-	Bonds      string
-	Flaws      string
-	Background string
-	Languages  []string
+	Alignment  string 'json:"alignment"'
+	Ideals     string 'json:"ideals"'
+	Bonds      string 'json:"bonds"'
+	Flaws      string 'json:"flaws"'
+	Background string 'json:"background"'
+	Languages  []string 'json:"languages"'
 }
 
 type Stats struct {
-	RawStats  map[string]int
-	Modifiers map[string]int
+	RawStats  map[string]int 'json:"rawStats"'
+	Modifiers map[string]int 'json:"modifiers"'
 }
 
 type Item struct {
-	Name        string
-	Worth       int //Worth in GP
-	Description string
+	Name        string 'json:"name"'
+	Worth       int 'json:"worth"'//Worth in GP
+	Description string 'json:"desc"'
 }
 
 type Wearable struct {
 	*Item
-	AC int
+	AC int 'json:"ac"'
 }
 
 type Weapon struct {
 	*Item
-	WeaponType string
-	Damage     DiceRoll //Possibly create a struct of some kind to represent dicerolls???
+	WeaponType string 'json:"type"'
+	Damage     DiceRoll 'json:"damage"'//Possibly create a struct of some kind to represent dicerolls???
 }
 
 type Skill struct {
-	Name        string
-	Description string
-	Type        string //Defines what type of skill i.e. usable per day/hour/etc
-	MaxUses     int
+	Name        string 'json:"name"'
+	Description string 'json:"desc"'
+	Type        string 'json:"type"'//Defines what type of skill i.e. usable per day/hour/etc
+	MaxUses     int 'json:"numUses"'
 }
 
 func main() {
