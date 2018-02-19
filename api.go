@@ -36,5 +36,5 @@ func main() {
 	router.HandleFunc("/getChar/", getChar).Methods("GET")
 	router.HandleFunc("/getChar/weapon", getWep).Methods("GET")
 	router.HandleFunc("/putChar/skil", addSkill).Methods("POST")
-
+	http.ListenAndServe(":8080", router)
 }
