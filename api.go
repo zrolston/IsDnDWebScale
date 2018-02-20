@@ -33,8 +33,8 @@ func addSkill(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	router := mux.NewRouter()
-	router.HandleFunc("/getChar", getChar).Methods("GET")
-	router.HandleFunc("/getChar/weapon", getWep).Methods("GET")
-	router.HandleFunc("/putChar/skill", addSkill).Methods("POST")
+	router.HandleFunc("/api/getChar", getChar).Methods("GET")
+	router.HandleFunc("/api/getChar/weapon", getWep).Methods("GET")
+	router.HandleFunc("/api/putChar/skill", addSkill).Methods("POST")
 	http.ListenAndServe(":8080", router)
 }
