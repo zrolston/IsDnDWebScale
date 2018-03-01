@@ -2,19 +2,20 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 
-	"github.com/gorilla/mux"
+	"google.golang.org/appengine"
 )
 
-func getChar(w http.ResponseWriter, r *http.Request) {
+func getGerald(w http.ResponseWriter, r *http.Request) {
 	char := makeGerald()
 	response, _ := json.Marshal(char)
 	w.Write(response)
 }
 
-func getWep(w http.ResponseWriter, r *http.Request) {
+func getGeraldWep(w http.ResponseWriter, r *http.Request) {
 	char := makeGerald()
 	wep := char.EquipedWeapon[0]
 	response, _ := json.Marshal(wep)
@@ -31,10 +32,16 @@ func addSkill(w http.ResponseWriter, r *http.Request) {
 	log.Print(skill.Name)
 }
 
+func welcomeTest(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintln(w, "Welcome to the fucking show")
+}
+
 func main() {
-	router := mux.NewRouter()
-	router.HandleFunc("/api/getChar", getChar).Methods("GET")
-	router.HandleFunc("/api/getChar/weapon", getWep).Methods("GET")
-	router.HandleFunc("/api/putChar/skill", addSkill).Methods("POST")
-	http.ListenAndServe(":8080", router)
+
+	http.HandleFunc("/", welcomeTest)
+	http.HandleFunc("/api/getGerald", getGerald)
+	http.HandleFunc("/api/getGerald/weapon", getGeraldWep)
+	http.HandleFunc("/api/putChar/skill", addSkill)
+
+	appengine.Main()
 }
