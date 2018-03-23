@@ -22,7 +22,7 @@ func (d *DiceRoll) Roll() int {
 }
 
 type Character struct {
-	Name           string
+	Name           string      `json:"name"`
 	Race           *Race       `json:"race"`     //Making it a pointer is more effiecient because there are a
 	Class          *Class      `json:"class"`    //set number of instatiated races and classes that we can just reference
 	Portrait       string      `json:"portrait"` //Maybe an image name???
