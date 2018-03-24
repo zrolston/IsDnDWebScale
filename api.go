@@ -5,31 +5,11 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"crypto/md5"
-  "encoding/hex"
 
 	"github.com/gorilla/mux"
 	"golang.org/x/crypto/bcrypt"
 	"google.golang.org/appengine"
 )
-
-type apiResponse struct {
-	errorCode int           `json:"err"`
-	message   []interface{} `json:"msg"`
-}
-
-func newAPIR(err int, data []interface{}) *apiResponse{
-	newOne := apiResponse{
-		errorCode: err,
-		message: data
-	}
-
-	return &newOne
-}
-
-func (api apiResponse) setMessage(data []interface{}){
-	api.message = data
-}
 
 //Should error out when username already exists in the database
 func signUp(w http.ResponseWriter, r *http.Request) {
@@ -74,21 +54,22 @@ func login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err := bcrypt.CompareHashAndPassword(realPass, []byte(pass)); err != nil {
-        w.WriteHeader(400)
-				w.Write("Password did not match")
-				return
-  }
+		w.WriteHeader(400)
+		w.Write("Password did not match")
+		return
+	}
 
-	hash := md5.New()
-	hash.write(realPass)
-	authToken := hex.EncodeToString(hash.Sum(nil))
+	authToken, err := uuid.NewV4()
+	if err != nil {
+		log.Printf("Something went wrong: %s", err)
+		w.WriteHeader(500)
+		w.Write("Could not generate token, sorry")
+		return
+	}
 
 	w.WriteHeader(200)
 	w.Write(authToken)
 }
-
-
-
 
 func getGerald(w http.ResponseWriter, r *http.Request) {
 	char := makeGerald()
