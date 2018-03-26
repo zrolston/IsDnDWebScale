@@ -5,26 +5,43 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/gorilla/mux"
 	"golang.org/x/crypto/bcrypt"
+
 	"google.golang.org/appengine"
+	"google.golang.org/appengine/datastore"
 )
+
+type UserAuth struct {
+	authToken string    `datastore:"authToken" json:"auth"`
+	username  string    `datastore:"user" json:"user"`
+	password  string    `datastore:"pass" json:"pass"`
+	lastUsed  time.Time `datastore:"time" json:"time"`
+}
 
 //Should error out when username already exists in the database
 func signUp(w http.ResponseWriter, r *http.Request) {
 	username := "Davin"
 	password := "pa$$word"
+
 	//TODO GET USERNAME/PASSWORD FROM httpRequest
 
-	err := nil
-	//TODO TEST IF USERNAME IS TAKEN
+	ctx := appengine.NewContext(r)
 
-	if err != nil {
+	key := datastore.newKey(ctx, "userAuth", username, 0, nil)
+
+	var user userAuth
+
+//TEST IF USERNAME IS TAKEN
+	if err := datastore.Get(ctx, key, &user); err == nil{
 		w.WriteHeader(418)
 		w.Write("Username already taken")
 		return
 	}
+
+	err := nil
 
 	hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 
@@ -34,7 +51,19 @@ func signUp(w http.ResponseWriter, r *http.Request) {
 		log.Fatal(err)
 	}
 
-	//TODO Write username and hashed password to database
+	user := userAuth{
+		authToken: uuid.NewV4(),
+		username : username,
+		password : hash,
+		lastUsed : time.Now()
+	}
+
+	//Write username and hashed password to database
+	newKey, err := datastore.Put(ctx, key, &user)
+	if err != nil {
+							http.Error(w, err.Error(), http.StatusInternalServerError)
+							return
+	}
 
 	w.WriteHeader(200)
 	w.Write("User registered successfully")
@@ -45,13 +74,19 @@ func login(w http.ResponseWriter, r *http.Request) {
 
 	realPass := "maymays"
 
-	//TODO get the users pwd from the database
+	ctx := appengine.NewContext(r)
+	key := datastore.newKey(ctx, "userAuth", username, 0, nil)
 
-	if err != nil {
-		w.WriteHeader(500)
-		w.Write("Could not encrypt for some reason")
-		log.Fatal(err)
+	var uAuth userAuth
+
+//TODO get the users pwd from the database
+	if err := datastore.Get(ctx, key, &uAuth); err != nil{
+		w.WriteHeader(418)
+		w.Write("Username not registered")
+		return
 	}
+
+	realPass := uAuth.password
 
 	if err := bcrypt.CompareHashAndPassword(realPass, []byte(pass)); err != nil {
 		w.WriteHeader(400)
@@ -60,11 +95,21 @@ func login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	authToken, err := uuid.NewV4()
+
 	if err != nil {
 		log.Printf("Something went wrong: %s", err)
 		w.WriteHeader(500)
 		w.Write("Could not generate token, sorry")
 		return
+	}
+
+	uAuth.authToken = authToken
+	uAuth.lastUsed = time.Now()
+
+	newKey, err := datastore.Put(ctx, key, &uAuth)
+	if err != nil {
+							http.Error(w, err.Error(), http.StatusInternalServerError)
+							return
 	}
 
 	w.WriteHeader(200)
