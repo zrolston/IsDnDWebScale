@@ -23,12 +23,13 @@ func (d *DiceRoll) Roll() int {
 
 type Character struct {
 	Name           string      `json:"name"`
-	Race           *Race       `json:"race"`     //Making it a pointer is more effiecient because there are a
-	Class          *Class      `json:"class"`    //set number of instatiated races and classes that we can just reference
+	Race           Race        `json:"race"`     //Making it a pointer is more effiecient because there are a
+	Class          Class       `json:"class"`    //set number of instatiated races and classes that we can just reference
 	Portrait       string      `json:"portrait"` //Maybe an image name???
 	Description    Description `json:"desc"`
 	Exp            int         `json:"exp"`
 	Stats          Stats       `json:"stats"`
+	Modifiers      Modifiers   `json:"mods"`
 	Inventory      []Item      `json:"inventory"`
 	EquipedClothes []Wearable  `json:"clothes"`
 	EquipedWeapon  []Weapon    `json:"weapons"`
@@ -36,10 +37,10 @@ type Character struct {
 }
 
 type Race struct {
-	Name        string         `json:"name"`
-	Image       string         `json:"image"`
-	Description string         `json:"desc"` //Possible front end use???
-	Bonuses     map[string]int `json:"bonuses"`
+	Name        string    `json:"name"`
+	Image       string    `json:"image"`
+	Description string    `json:"desc"` //Possible front end use???
+	Bonuses     Modifiers `json:"bonuses"`
 }
 
 type Class struct {
@@ -59,8 +60,21 @@ type Description struct {
 }
 
 type Stats struct {
-	RawStats  map[string]int `json:"rawStats"`
-	Modifiers map[string]int `json:"modifiers"`
+	Strength     int `json:"strength"`
+	Dexterity    int `json:"dexterity"`
+	Constitution int `json:"constitution"`
+	Intelligence int `json:"intelligence"`
+	Wisdom       int `json:"wisdom"`
+	Charisma     int `json:"charisma"`
+}
+
+type Modifiers struct {
+	StrengthMod     int `json:"strengthMod"`
+	DexterityMod    int `json:"dexterityMod"`
+	ConstitutionMod int `json:"constitutionMod"`
+	IntelligenceMod int `json:"intelligenceMod"`
+	WisdomMod       int `json:"wisdomMod"`
+	CharismaMod     int `json:"charismaMod"`
 }
 
 type Item struct {
@@ -87,17 +101,33 @@ type Skill struct {
 	MaxUses     int    `json:"numUses"`
 }
 
-func makeGerald() *Character {
-	bonusMap := map[string]int{"Strength": 1, "Intelligence": 1}
+func NewMod(myStats Stats) Modifiers {
+	mod := Modifiers{
+		StrengthMod:     (myStats.Strength - 10) / 2,
+		DexterityMod:    (myStats.Dexterity - 10) / 2,
+		ConstitutionMod: (myStats.Constitution - 10) / 2,
+		IntelligenceMod: (myStats.Intelligence - 10) / 2,
+		WisdomMod:       (myStats.Wisdom - 10) / 2,
+		CharismaMod:     (myStats.Charisma - 10) / 2,
+	}
 
-	human := &Race{
+	return mod
+}
+
+func makeGerald() Character {
+
+	bonusMap := Modifiers{
+		IntelligenceMod: 1,
+	}
+
+	human := Race{
 		Name:        "Human",
 		Image:       "benis.jpg",
 		Description: "Pretty boring for now.",
 		Bonuses:     bonusMap,
 	}
 
-	warrior := &Class{
+	warrior := Class{
 		Name:          "Warrior",
 		Subclass:      "Meme Crusader",
 		Description:   "Nothing for now",
@@ -114,9 +144,15 @@ func makeGerald() *Character {
 	}
 
 	stat := Stats{
-		RawStats:  map[string]int{"Strength": 15},
-		Modifiers: map[string]int{"Strength": 1},
+		Strength:     15,
+		Dexterity:    16,
+		Constitution: 17,
+		Intelligence: 18,
+		Wisdom:       19,
+		Charisma:     20,
 	}
+
+	mods := NewMod(stat)
 
 	gerald := Character{
 		Name:           "Gerald",
@@ -126,6 +162,7 @@ func makeGerald() *Character {
 		Description:    desc,
 		Exp:            15,
 		Stats:          stat,
+		Modifiers:      mods,
 		Inventory:      []Item{},
 		EquipedClothes: []Wearable{},
 		EquipedWeapon: []Weapon{Weapon{
@@ -139,5 +176,5 @@ func makeGerald() *Character {
 		Skills: []Skill{},
 	}
 
-	return &gerald
+	return gerald
 }
