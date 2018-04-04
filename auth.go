@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/json"
 	"net/http"
 	"strconv"
 	"time"
@@ -18,38 +17,6 @@ type UserAuth struct {
 	Username  string    `datastore:"user" json:"user"`
 	Password  []byte    `datastore:"pass" json:"pass"`
 	LastUsed  time.Time `datastore:"time" json:"time"`
-}
-
-func removeUser(w http.ResponseWriter, r *http.Request) {
-	setupResponse(&w, r)
-	username, password, ok := r.BasicAuth()
-
-	if !ok {
-		w.WriteHeader(418)
-		writeMessage(w, "Basic Auth incorrectly passed")
-		return
-	}
-
-	if password != "root" {
-		w.WriteHeader(418)
-		writeMessage(w, "Fuck off Ricky")
-		return
-	}
-
-	ctx := appengine.NewContext(r)
-
-	key := datastore.NewKey(ctx, "userAuth", username, 0, nil)
-
-	err := datastore.Delete(ctx, key)
-
-	if err != nil {
-		w.WriteHeader(400)
-		writeMessage(w, "Didn't delete for some reason")
-		return
-	}
-
-	w.WriteHeader(200)
-	writeMessage(w, "Successful deletion")
 }
 
 //Should error out when username already exists in the database
@@ -222,8 +189,18 @@ func basicAuthTest(w http.ResponseWriter, r *http.Request) {
 	writeMessage(w, s)
 }
 
-func writeMessage(w http.ResponseWriter, s string) {
-	mapD := map[string]string{"str": s}
-	mapB, _ := json.Marshal(mapD)
-	w.Write(mapB)
+func testTokens(w http.ResponseWriter, r *http.Request) {
+	setupResponse(&w, r)
+	token, _, _ := r.BasicAuth()
+	ctx := appengine.NewContext(r)
+
+	resp, ok := checkValidToken(token, ctx)
+
+	if ok {
+		w.WriteHeader(200)
+	}
+	if !ok {
+		w.WriteHeader(404)
+	}
+	writeMessage(w, resp)
 }

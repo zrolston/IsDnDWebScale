@@ -50,17 +50,6 @@ func getGeraldDB(w http.ResponseWriter, r *http.Request) {
 	w.Write(response)
 }
 
-func getGerald(w http.ResponseWriter, r *http.Request) {
-
-	setupResponse(&w, r)
-
-	char := makeGerald()
-
-	response, _ := json.Marshal(&char)
-	w.WriteHeader(200)
-	w.Write(response)
-}
-
 func getGeraldWep(w http.ResponseWriter, r *http.Request) {
 	char := makeGerald()
 	wep := char.EquipedWeapon[0]
@@ -109,8 +98,11 @@ func RegisterHandlers() {
 	router.HandleFunc("/api/signup", signUp)
 	router.HandleFunc("/api/testDB/put/{num}", dbTestPut)
 	router.HandleFunc("/api/testDB/get", dbTestGet)
-	router.HandleFunc("/api/testAuth", basicAuthTest)
+	router.HandleFunc("/api/testAuth", testTokens)
 	router.HandleFunc("/api/you/should/not/call/this", removeUser)
+	router.HandleFunc("/api/putChar", putChar).Methods("POST")
+	router.HandleFunc("/api/testBody", testBody).Methods("POST")
+	router.HandleFunc("/api/getChars", getCharList)
 
 	http.Handle("/", router)
 }
