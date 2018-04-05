@@ -40,6 +40,7 @@ type Race struct {
 	Name        string    `json:"name"`
 	Image       string    `json:"image"`
 	Description string    `json:"desc"` //Possible front end use???
+	Traits      []string  `json:"traits"`
 	Bonuses     Modifiers `json:"bonuses"`
 }
 
@@ -124,6 +125,7 @@ func makeGerald() Character {
 		Name:        "Human",
 		Image:       "benis.jpg",
 		Description: "Pretty boring for now.",
+		Traits:      []string{"Meme master: Mastery of memes"},
 		Bonuses:     bonusMap,
 	}
 
