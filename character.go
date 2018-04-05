@@ -52,12 +52,11 @@ type Class struct {
 }
 
 type Description struct {
-	Alignment  string   `json:"alignment"`
-	Ideals     string   `json:"ideals"`
-	Bonds      string   `json:"bonds"`
-	Flaws      string   `json:"flaws"`
-	Background string   `json:"background"`
-	Languages  []string `json:"languages"`
+	Alignment  string `json:"alignment"`
+	Ideals     string `json:"ideals"`
+	Bonds      string `json:"bonds"`
+	Flaws      string `json:"flaws"`
+	Background string `json:"background"`
 }
 
 type Stats struct {
@@ -142,7 +141,6 @@ func makeGerald() Character {
 		Bonds:      "n/a",
 		Flaws:      "most things",
 		Background: "idk",
-		Languages:  []string{"memes", "Latvian"},
 	}
 
 	stat := Stats{
