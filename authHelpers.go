@@ -10,23 +10,6 @@ import (
 	"google.golang.org/appengine/datastore"
 )
 
-func checkValidToken(authToken string, ctx context.Context) (string, bool) {
-
-	var tokens []UserAuth
-
-	_, err := datastore.NewQuery("userAuth").Filter("authToken =", authToken).GetAll(ctx, &tokens)
-
-	if len(tokens) == 0 || err != nil {
-		return "Frigg off Ricky", false
-	}
-
-	if !checkTime(tokens[0].LastUsed) {
-		return "Bad Time", false
-	}
-
-	return tokens[0].Username, true
-}
-
 func refreshTime(username string, ctx context.Context) error {
 
 	key := datastore.NewKey(ctx, "userAuth", username, 0, nil)
@@ -120,4 +103,71 @@ func deletTransaction(ctx context.Context, userKey *datastore.Key, charKeys []*d
 	}
 
 	return nil
+}
+
+func deleteChars(w http.ResponseWriter, r *http.Request) {
+	setupResponse(&w, r)
+	authToken, _, ok := r.BasicAuth()
+	if !ok {
+		w.WriteHeader(420)
+		writeMessage(w, "Unable to get basic auth")
+		return
+	}
+
+	ctx := appengine.NewContext(r)
+
+	username, ok := checkValidToken(authToken, ctx)
+	if !ok {
+		w.WriteHeader(418)
+		writeMessage(w, "Invalid Token!")
+		return
+	}
+
+	var chars []UserChar
+	keys, err := datastore.NewQuery("userChar").Filter("username =", username).GetAll(ctx, &chars)
+	if err != nil {
+		w.WriteHeader(500)
+		writeMessage(w, "Unable to perform query "+err.Error())
+		return
+	}
+
+	err = datastore.DeleteMulti(ctx, keys)
+	if err != nil {
+		w.WriteHeader(500)
+		writeMessage(w, "Unable to delete: "+err.Error())
+		return
+	}
+
+	w.WriteHeader(200)
+	writeMessage(w, "Successful Deletions")
+}
+
+func deleteChar(w http.ResponseWriter, r *http.Request) {
+	setupResponse(&w, r)
+
+	authToken, name, ok := r.BasicAuth()
+	if !ok {
+		w.WriteHeader(420)
+		writeMessage(w, "Incorrect Basic Auth")
+	}
+
+	ctx := appengine.NewContext(r)
+
+	username, ok := checkValidToken(authToken, ctx)
+	if !ok {
+		w.WriteHeader(418)
+		writeMessage(w, "Invalid Authentication")
+		return
+	}
+
+	key := datastore.NewKey(ctx, "userChar", username+" "+name, 0, nil)
+	err := datastore.Delete(ctx, key)
+	if err != nil {
+		w.WriteHeader(440)
+		writeMessage(w, "Deletion impossible: "+err.Error())
+		return
+	}
+
+	w.WriteHeader(200)
+	writeMessage(w, "Successful Deletion of "+name)
 }

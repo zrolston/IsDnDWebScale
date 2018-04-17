@@ -1,23 +1,27 @@
 import requests
 import json
 
-#r = requests.get('https://idnddb-195923.appspot.com/api/signup', auth=('benis','crempo'))
-#print(r.text)
-#r = requests.get('https://idnddb-195923.appspot.com/api/you/should/not/call/this', auth=('benis', 'root'))
+#login = requests.get('https://idnddb-195923.appspot.com/api/signup', auth=('davin', 'p@ssword'))
 
-r0 =  requests.get('https://idnddb-195923.appspot.com/api/login', auth=('benis','crempo'))
-authToken = r0.json()['str']
-#authToken = "eb3b043f-a654-445c-b3ed-e7874875bcdc"
-print(r0.text)
+login = requests.get('https://idnddb-195923.appspot.com/api/login', auth=('davin', 'p@ssword'))
+print(login.text)
 
-r3 = requests.get('https://idnddb-195923.appspot.com/api/getGerald')
+authToken = login.json()['str']
 
-r2 = requests.post('https://idnddb-195923.appspot.com/api/putChar', auth=(authToken,''), json=r3.json())
+gerald = requests.get('https://idnddb-195923.appspot.com/api/getGerald', auth=(authToken,''))
 
-print(r2.status_code)
-print(r2.text)
+print(gerald.text)
 
-r1 = requests.get('https://idnddb-195923.appspot.com/api/getChars', auth=(authToken,0))
+blah = {"name":"Gerald"}
+put = requests.post('https://idnddb-195923.appspot.com/api/putChar', auth=(authToken,''), json=blah)
+print(put.text)
+"""
+gGet = requests.get('https://idnddb-195923.appspot.com/api/getChars', auth=(authToken,''))
+print(gGet.text)
 
-print(r1.status_code)
-print(r1.text)
+remove = requests.post('https://idnddb-195923.appspot.com/api/deleteChars', auth=(authToken,''))
+print(remove.text)
+
+gGet = requests.get('https://idnddb-195923.appspot.com/api/getChars', auth=(authToken,''))
+print(gGet.text)
+"""

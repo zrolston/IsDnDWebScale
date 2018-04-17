@@ -69,6 +69,7 @@ func putChar(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		w.WriteHeader(420)
 		writeMessage(w, err.Error())
+		return
 	}
 
 	userChar := UserChar{
@@ -96,32 +97,17 @@ func putChar(w http.ResponseWriter, r *http.Request) {
 	writeMessage(w, "Successful Write")
 }
 
-func testBody(w http.ResponseWriter, r *http.Request) {
+func emptyChar(w http.ResponseWriter, r *http.Request) {
 	setupResponse(&w, r)
 
-	decoder := json.NewDecoder(r.Body)
-	var char Character
-	err := decoder.Decode(&char)
+	char := Character{}
+
+	response, err := json.Marshal(char)
 	if err != nil {
-		w.WriteHeader(420)
-		writeMessage(w, "Fug")
+		w.WriteHeader(505)
+		writeMessage(w, "Unable to marshal")
+		return
 	}
-
 	w.WriteHeader(200)
-	writeMessage(w, "Successful decode of "+char.Name)
-	/*
-		decoder := json.NewDecoder(bod)
-
-		var char Character
-		err = decoder.Decode(&char)
-		if err != nil {
-			w.WriteHeader(400)
-			writeMessage(w, err.Error())
-			return
-		}
-		/*
-			response, _ := json.Marshal(char)
-			w.WriteHeader(200)
-			w.Write(response)
-	*/
+	w.Write(response)
 }
