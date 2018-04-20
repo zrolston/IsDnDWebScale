@@ -34,3 +34,18 @@ func getClasses(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(200)
 	w.Write(response)
 }
+
+func getSkills(w http.ResponseWriter, r *http.Request) {
+	setupResponse(&w, r)
+
+	skills := makeAllSkills()
+	response, err := json.Marshal(skills)
+	if err != nil {
+		w.WriteHeader(505)
+		writeMessage(w, err.Error())
+		return
+	}
+
+	w.WriteHeader(200)
+	w.Write(response)
+}

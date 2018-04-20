@@ -1,5 +1,14 @@
 package main
 
+import (
+	"encoding/json"
+	"fmt"
+	"log"
+	"net/http"
+
+	"google.golang.org/appengine"
+	"google.golang.org/appengine/datastore"
+)
 
 func testBody(w http.ResponseWriter, r *http.Request) {
 	setupResponse(&w, r)
@@ -30,7 +39,6 @@ func testBody(w http.ResponseWriter, r *http.Request) {
 			w.Write(response)
 	*/
 }
-
 
 func putGerald(w http.ResponseWriter, r *http.Request) {
 	char := makeGerald()
@@ -94,7 +102,6 @@ func addSkill(w http.ResponseWriter, r *http.Request) {
 func welcomeTest(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintln(w, "Welcome to the fucking show")
 }
-
 
 func makeGerald() Character {
 
@@ -170,14 +177,15 @@ func makeGerald() Character {
 			WeaponType: "MayMays",
 			Damage:     DiceRoll{NumRolls: 2, Sides: 10},
 		}},
-		Skills: []Skill{
-			Skill{
+		Spells: []Spell{
+			Spell{
 				Name:        "Dab",
 				Description: "Dabs on the haters",
 				Type:        "Per Encounter",
 				MaxUses:     5,
 			},
 		},
+		Skills: makeAllSkills(),
 	}
 
 	return gerald

@@ -171,3 +171,25 @@ func deleteChar(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(200)
 	writeMessage(w, "Successful Deletion of "+name)
 }
+
+func validToken(w http.ResponseWriter, r *http.Request) {
+	setupResponse(&w, r)
+
+	authToken, _, ok := r.BasicAuth()
+	if !ok {
+		w.WriteHeader(418)
+		writeMessage(w, "Could not get basic auth")
+		return
+	}
+	ctx := appengine.NewContext(r)
+
+	_, ok = checkValidToken(authToken, ctx)
+	if !ok {
+		w.WriteHeader(418)
+		writeMessage(w, "Invalid token")
+		return
+	}
+
+	w.WriteHeader(200)
+	writeMessage(w, "You're guccini")
+}

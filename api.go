@@ -36,6 +36,8 @@ func RegisterHandlers() {
 	router.HandleFunc("/api/deleteChars", deleteChars)
 	router.HandleFunc("/api/deleteChar", deleteChar)
 	router.HandleFunc("/api/emptyChar", emptyChar)
+	router.HandleFunc("/api/checkToken", validToken)
+	router.HandleFunc("/api/getSkills", getSkills)
 
 	originsOK := handlers.AllowedOrigins([]string{"*"})
 	headersOk := handlers.AllowedHeaders([]string{"Accept", "Content-Type", "Content-Length", "Accept-Encoding", "X-CSRF-Token", "Authorization", "X-Testing"})

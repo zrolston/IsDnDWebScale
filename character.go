@@ -34,6 +34,7 @@ type Character struct {
 	EquipedClothes []Wearable  `json:"clothes"`
 	EquipedWeapon  []Weapon    `json:"weapons"`
 	Skills         []Skill     `json:"skills"`
+	Spells         []Spell     `json:"spells"`
 }
 
 type Race struct {
@@ -95,6 +96,11 @@ type Weapon struct {
 }
 
 type Skill struct {
+	Name        string `json:"name"`
+	PrimaryStat string `json:"primaryStat"`
+}
+
+type Spell struct {
 	Name        string `json:"name"`
 	Description string `json:"desc"`
 	Type        string `json:"type"` //Defines what type of skill i.e. usable per day/hour/etc
