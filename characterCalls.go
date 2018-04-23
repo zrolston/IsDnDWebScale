@@ -100,7 +100,9 @@ func putChar(w http.ResponseWriter, r *http.Request) {
 func emptyChar(w http.ResponseWriter, r *http.Request) {
 	setupResponse(&w, r)
 
-	char := Character{}
+	char := Character{
+		Name: "Default",
+	}
 
 	response, err := json.Marshal(char)
 	if err != nil {

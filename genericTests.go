@@ -117,12 +117,7 @@ func makeGerald() Character {
 		Bonuses:     bonusMap,
 	}
 
-	warrior := Class{
-		Name:          "Warrior",
-		Subclass:      "Meme Crusader",
-		Description:   "Nothing for now",
-		Proficiencies: []string{"Maymays", "Swords"},
-	}
+	warrior := makeFighter()
 
 	desc := Description{
 		Alignment:  "n/a",
@@ -152,13 +147,6 @@ func makeGerald() Character {
 		Exp:         15,
 		Stats:       stat,
 		Modifiers:   mods,
-		Inventory: []Item{
-			Item{
-				Name:        "Sandwich",
-				Worth:       3,
-				Description: "Sub-Par",
-			},
-		},
 		EquipedClothes: []Wearable{
 			Wearable{
 				Item: Item{

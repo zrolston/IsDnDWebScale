@@ -47,6 +47,7 @@ type Race struct {
 
 type Class struct {
 	Name          string   `json:"name"`
+	Image         string   `json:"image"`
 	Subclass      string   `json:"subclass"`
 	Description   string   `json:"desc"` //Possible front end use???
 	Proficiencies []string `json:"proficiencies"`
